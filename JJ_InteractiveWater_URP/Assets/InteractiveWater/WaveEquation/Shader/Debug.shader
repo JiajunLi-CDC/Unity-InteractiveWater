@@ -1,8 +1,9 @@
-Shader "JJ/HumanPosition"
+Shader "JJ/Debug"
 {
     Properties
     {
-        _MainTex("MainTex",2d) = "white"{}
+        _MainTex("MainTex",2d) = "black"{}
+        _HumanPosTex("_HumanPosTex",2d) = "black"{}
         //        _tSpecShift("tSpecShift",2d) = "white"{}
         //        _MainColor ("MainColor",color) = (1,1,1,1)
         //        _SpecColor ("SpecColor",color) = (1,1,1,1)
@@ -32,10 +33,10 @@ Shader "JJ/HumanPosition"
                 //"PassFlags" = "OnlyDirectional" // 在 ForwardBase 通道类型中使用时，此标志的作用是仅允许主方向光和环境光/光照探针数据传递到着色器。这意味着非重要光源的数据将不会传递到顶点光源或球谐函数着色器变量。请参阅前向渲染以了解详细信息
                 //"RequireOptions" = "SoftVegetation"
             }
-            
-            Cull Front
-            ZTest LEqual
-            
+
+//            Cull Front
+//            ZTest LEqual
+
             //states|oldstates
             HLSLPROGRAM
             #pragma vertex vert
@@ -64,6 +65,7 @@ Shader "JJ/HumanPosition"
 
             // TODO: 变量定义
             sampler2D _MainTex;
+            sampler2D _HumanPosTex;
             float4 _MainTex_ST;
 
             v2f vert(appdata v) // appdata_base | appdata_tan | appdata_full
@@ -82,7 +84,13 @@ Shader "JJ/HumanPosition"
 
             half4 frag(v2f i) : SV_Target
             {
-                return half4(1, 0, 0, 1);
+                half oldColor = tex2D(_MainTex, i.uv).r;
+                half newColor = tex2D(_HumanPosTex, i.uv).r;
+
+                oldColor *= 0.95;
+                half final = oldColor + newColor;
+
+                return half4(newColor, 0, 0, 1);
             }
             ENDHLSL
 

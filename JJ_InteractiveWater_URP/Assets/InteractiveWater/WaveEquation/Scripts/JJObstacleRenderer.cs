@@ -12,8 +12,10 @@ public class JJObstacleRenderer : MonoBehaviour
     [Range(1000, 5000)] public int QueueMax = 5000;
     public RenderPassEvent PassEvent = RenderPassEvent.AfterRenderingSkybox;
     public Material obstacleMaterial;
+    public Material TrailMaterial;
+    public Material DebugMaterial;
     public Camera targetCamera; // 新增：指定渲染的相机
-
+    public int RenderTextureSize = 256;
     private ObstacleRenderPass _obstacleRenderPass;
 
     void OnEnable()
@@ -25,6 +27,9 @@ public class JJObstacleRenderer : MonoBehaviour
         _obstacleRenderPass.QueueMax = this.QueueMax;
         _obstacleRenderPass.PassEvent = this.PassEvent;
         _obstacleRenderPass.overrideMaterial = this.obstacleMaterial;
+        _obstacleRenderPass.RenderTextureSize = this.RenderTextureSize;
+        _obstacleRenderPass.TrailMaterial = this.TrailMaterial;
+        _obstacleRenderPass.DebugMaterial = this.DebugMaterial;
 
         RenderPipelineManager.beginCameraRendering += OnBeginCamera;
     }
@@ -37,6 +42,9 @@ public class JJObstacleRenderer : MonoBehaviour
         _obstacleRenderPass.QueueMin = this.QueueMin;
         _obstacleRenderPass.QueueMax = this.QueueMax;
         _obstacleRenderPass.PassEvent = this.PassEvent;
+        _obstacleRenderPass.RenderTextureSize = this.RenderTextureSize;
+        _obstacleRenderPass.TrailMaterial = this.TrailMaterial;
+        _obstacleRenderPass.DebugMaterial = this.DebugMaterial;
     }
 
     private void OnDisable()
