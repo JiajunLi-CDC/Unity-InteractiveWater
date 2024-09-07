@@ -9,9 +9,12 @@ public class WaveteComputeManager : MonoBehaviour
     public ComputeShader waveCompute;
     public Material waveMaterial;
     public RenderTexture NState, Nm1State, Np1State;
+   
     public Vector2Int resolution; //分辨率
     public Vector3 effect; //x coord,y coord, strength
     public float dispersion = 0.98f;
+    
+    public RenderTexture HumanPositionTex;
     public RenderTexture ObstacleTex;
     
     private void Start()
@@ -20,9 +23,15 @@ public class WaveteComputeManager : MonoBehaviour
         InitializeTexture(ref Nm1State);
         InitializeTexture(ref Np1State);
         ObstacleTex.enableRandomWrite = true;
+        HumanPositionTex.enableRandomWrite = true;
+            
         if (ObstacleTex.width != resolution.x || ObstacleTex.height != resolution.y)
         {
             Debug.Log("需要调整障碍物RT分辨率");
+        }
+        if (HumanPositionTex.width != resolution.x || HumanPositionTex.height != resolution.y)
+        {
+            Debug.Log("需要调整人物轨迹RT分辨率");
         }
         waveMaterial.SetTexture("_MainTex",NState);
     }
@@ -48,6 +57,7 @@ public class WaveteComputeManager : MonoBehaviour
         waveCompute.SetTexture(0, "Nm1State", Nm1State);
         waveCompute.SetTexture(0, "Np1State", Np1State);
         waveCompute.SetTexture(0, "ObstacleTex", ObstacleTex);
+        waveCompute.SetTexture(0, "HumanPositionTex", HumanPositionTex);
         
         waveCompute.SetVector("effect",effect);
         waveCompute.SetFloat("dispersion",dispersion);

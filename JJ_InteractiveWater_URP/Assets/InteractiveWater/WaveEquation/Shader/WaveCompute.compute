@@ -6,6 +6,8 @@ RWTexture2D<float4> NState;
 RWTexture2D<float4> Nm1State;
 RWTexture2D<float4> Np1State;
 RWTexture2D<float4> ObstacleTex;
+RWTexture2D<float4> HumanPositionTex;
+
 int2 resolution;
 float3 effect;
 float dispersion;
@@ -23,7 +25,12 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     float newWaveHeight = ns_ij * 2 - nm1s_ij + 0.25 * (ns_ip1j + ns_im1j + ns_ijm1 + ns_ijp1 - 4 * ns_ij);
     newWaveHeight *= dispersion;
 
-    if (id.x == floor(effect.x) && id.y == floor(effect.y))
+    // if (id.x == floor(effect.x) && id.y == floor(effect.y))
+    // {
+    //     newWaveHeight = effect.z;
+    // }
+
+    if (HumanPositionTex[id.xy].x == 1)
     {
         newWaveHeight = effect.z;
     }
