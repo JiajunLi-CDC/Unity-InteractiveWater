@@ -49,9 +49,9 @@ Shader "Custom/HumanTrail"
 
             half4 frag(v2f i) : SV_Target
             {
-                half2 offsetPos = half2(-_uvOffset.x,-_uvOffset.y);
+               
                 // 读取当前轨迹和新的位置信息
-                half oldTrail = tex2D(_MainTex, i.uv + offsetPos).r;
+                half oldTrail = tex2D(_MainTex, i.uv - _uvOffset).r;
                 half newTrail = tex2D(_HumanPosTex, i.uv).r;
 
                 // 衰减旧的轨迹
