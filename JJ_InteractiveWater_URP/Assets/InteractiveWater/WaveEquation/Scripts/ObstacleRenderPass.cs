@@ -14,6 +14,7 @@ public class ObstacleRenderPass : ScriptableRenderPass
     public Material DebugMaterial;
     public int RenderTextureSize = 256;
     public float speed;
+    public Vector2 uvOffset;
 
     [Range(1000, 5000)] public int QueueMin = 2000;
     [Range(1000, 5000)] public int QueueMax = 5000;
@@ -84,6 +85,7 @@ public class ObstacleRenderPass : ScriptableRenderPass
         TrailMaterial.SetFloat("_HumanSpeed",speed);
         DebugMaterial.SetTexture("_HumanPosTex", HumanPosTex);
         TrailMaterial.SetTexture("_HumanPosTex", HumanPosTex);
+        TrailMaterial.SetVector("_uvOffset", uvOffset);
         
         cmd02.Blit(HumanTrailTex,Source,TrailMaterial);
         

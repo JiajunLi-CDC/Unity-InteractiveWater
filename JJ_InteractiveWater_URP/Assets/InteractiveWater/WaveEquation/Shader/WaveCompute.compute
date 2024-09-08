@@ -30,15 +30,15 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     //     newWaveHeight = effect.z;
     // }
 
-    if (HumanPositionTex[id.xy].x == 1)
-    {
-        newWaveHeight = effect.z;
-    }
-    
-    // if (HumanPositionTex[id.xy].x > 0)
+    // if (HumanPositionTex[id.xy].x > 1)
     // {
-    //     newWaveHeight += HumanPositionTex[id.xy].x;
+    //     newWaveHeight = effect.z;
     // }
+    
+    if (HumanPositionTex[id.xy].x > 0)
+    {
+        newWaveHeight += HumanPositionTex[id.xy].x;
+    }
 
     if (ObstacleTex[id.xy].x == 1)
     {

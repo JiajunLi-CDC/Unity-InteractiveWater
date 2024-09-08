@@ -16,6 +16,7 @@ public class JJObstacleRenderer : MonoBehaviour
     public Material DebugMaterial;
     public Camera targetCamera;
     public int RenderTextureSize = 256;
+    public float TexWorldSize = 10f;
     private ObstacleRenderPass _obstacleRenderPass;
 
     public GameObject HumanController;
@@ -46,17 +47,21 @@ public class JJObstacleRenderer : MonoBehaviour
         currentPosition = HumanController.transform.position;
 
         // 计算 HumanController 的速度（基于位置变化）
-        float cha = (currentPosition - previousPosition).magnitude;
+        Vector3 cha = (currentPosition - previousPosition);
+        float dis = (currentPosition - previousPosition).magnitude;
+       
         Vector3 velocity = new Vector3(0,0,0);
-        if (cha > 0.01)
+        if (dis > 0.01)
         {
-            velocity = (currentPosition - previousPosition) / Time.deltaTime;
+            velocity = cha / Time.deltaTime;
             _obstacleRenderPass.speed = velocity.magnitude; // 获取速度大小并传入渲染器
+            _obstacleRenderPass.uvOffset = new Vector2(cha.x,cha.z) / TexWorldSize; // 获取uv偏移
         }
         else
         {
             velocity = new Vector3(0,0,0);
             _obstacleRenderPass.speed = 0; // 获取速度大小并传入渲染器
+            _obstacleRenderPass.uvOffset = new Vector2(0,0);
         }
         
         // Debug.Log("速度大小为"+velocity.magnitude);
