@@ -65,6 +65,7 @@ Shader "JJ/HumanPosition"
             // TODO: 变量定义
             sampler2D _MainTex;
             float4 _MainTex_ST;
+            float _Speed;
 
             v2f vert(appdata v) // appdata_base | appdata_tan | appdata_full
             {

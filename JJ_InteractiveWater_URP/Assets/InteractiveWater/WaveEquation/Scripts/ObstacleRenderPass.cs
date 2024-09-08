@@ -13,6 +13,7 @@ public class ObstacleRenderPass : ScriptableRenderPass
     public Material TrailMaterial; // 指定的材质
     public Material DebugMaterial;
     public int RenderTextureSize = 256;
+    public float speed;
 
     [Range(1000, 5000)] public int QueueMin = 2000;
     [Range(1000, 5000)] public int QueueMax = 5000;
@@ -76,15 +77,19 @@ public class ObstacleRenderPass : ScriptableRenderPass
         context.ExecuteCommandBuffer(cmd);
         context.DrawRenderers(renderingData.cullResults, ref drawingSettings, ref filter);
         
+        
+        //-------------------------------------------------------------------------------
         CommandBuffer cmd02 = CommandBufferPool.Get("TrailDrawer");
         cmd02.Blit(Source,HumanPosTex);  //copy
-        Shader.SetGlobalTexture("_HumanPosTex",HumanPosTex);
+        TrailMaterial.SetFloat("_HumanSpeed",speed);
         DebugMaterial.SetTexture("_HumanPosTex", HumanPosTex);
+        TrailMaterial.SetTexture("_HumanPosTex", HumanPosTex);
         
         cmd02.Blit(HumanTrailTex,Source,TrailMaterial);
+        
         cmd02.Blit(Source,HumanTrailTex);
         context.ExecuteCommandBuffer(cmd02);
-
+        
         // 释放命令缓冲区
         CommandBufferPool.Release(cmd);
         CommandBufferPool.Release(cmd02);
@@ -95,6 +100,10 @@ public class ObstacleRenderPass : ScriptableRenderPass
 
     public override void OnCameraCleanup(CommandBuffer cmd)
     {
-        // 这里不需要清理 RenderTarget，因为我们直接写入相机的缓冲区
+        // 不清理 HumanTrailTex，只清理 HumanPosTex
+        if (HumanPosTex != null)
+        {
+            HumanPosTex.Release();
+        }
     }
 }

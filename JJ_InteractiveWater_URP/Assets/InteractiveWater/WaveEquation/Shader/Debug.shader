@@ -34,8 +34,9 @@ Shader "JJ/Debug"
                 //"RequireOptions" = "SoftVegetation"
             }
 
-//            Cull Front
-//            ZTest LEqual
+//            ZWrite Off
+//            ZTest Always
+//            Cull Off
 
             //states|oldstates
             HLSLPROGRAM
@@ -84,13 +85,9 @@ Shader "JJ/Debug"
 
             half4 frag(v2f i) : SV_Target
             {
-                half oldColor = tex2D(_MainTex, i.uv).r;
-                half newColor = tex2D(_HumanPosTex, i.uv).r;
-
-                oldColor *= 0.95;
-                half final = oldColor + newColor;
-
-                return half4(newColor, 0, 0, 1);
+          
+                half Color = tex2D(_HumanPosTex, i.uv).r;
+                return half4(Color, 0, 0, 1);
             }
             ENDHLSL
 
