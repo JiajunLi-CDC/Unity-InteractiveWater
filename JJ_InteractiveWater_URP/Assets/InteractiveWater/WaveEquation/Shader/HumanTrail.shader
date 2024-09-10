@@ -34,10 +34,18 @@ Shader "Custom/HumanTrail"
                 float4 pos : SV_POSITION;
             };
 
+            struct my_PlayerStruct
+            {
+                float speed;
+                float3 PositionWS;
+                float2 uvOffset;
+            };
+
             sampler2D _MainTex;
             sampler2D _HumanPosTex;
             float _HumanSpeed;
             half2 _uvOffset;
+            StructuredBuffer<my_PlayerStruct> _my_PlayerBuffer;
 
             v2f vert(appdata v)
             {
@@ -56,11 +64,11 @@ Shader "Custom/HumanTrail"
 
                 // 衰减旧的轨迹
                 oldTrail *= 0.95;
-                newTrail *= _HumanSpeed * 0.5 ;
+                newTrail *= _HumanSpeed ;
                 newTrail = saturate(newTrail);
 
                 // 将新的位置数据添加到轨迹中
-                half finalTrail = oldTrail + newTrail;
+                half finalTrail = lerp(oldTrail , 1 , newTrail);
 
                 return half4(finalTrail, 0, 0, 1);
             }
