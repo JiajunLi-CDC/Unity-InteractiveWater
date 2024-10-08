@@ -1,54 +1,61 @@
 // Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel CSMain
-
+#pragma kernel OffsetTex
 
 RWTexture2D<float4> NState;
 RWTexture2D<float4> Nm1State;
 RWTexture2D<float4> Np1State;
 RWTexture2D<float4> ObstacleTex;
+RWTexture2D<float4> OffsetState01;
+RWTexture2D<float4> OffsetState02;
 RWTexture2D<float4> HumanPositionTex;
 
 int2 resolution;
 float3 effect;
 float dispersion;
+float2 pixalOffset; // 新增的uvOffset
 
 
 [numthreads(8,8,1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
-    float ns_ij = NState[id.xy];
-    float nm1s_ij = Nm1State[id.xy].x;
-    float ns_ip1j = NState[id.xy + uint2(1, 0)].x;
-    float ns_ijp1 = NState[id.xy + uint2(0, 1)].x;
-    float ns_im1j = NState[id.xy + uint2(-1, 0)].x;
-    float ns_ijm1 = NState[id.xy + uint2(0, -1)].x;
+    // 偏移当前的id.xy，使其计算时相对于局部水面
+    int2 uvPos = id.xy ;
+    
+    float ns_ij = NState[uvPos];
+    float nm1s_ij = Nm1State[uvPos].x;
+    float ns_ip1j = NState[uvPos + uint2(1, 0)].x;
+    float ns_ijp1 = NState[uvPos + uint2(0, 1)].x;
+    float ns_im1j = NState[uvPos + uint2(-1, 0)].x;
+    float ns_ijm1 = NState[uvPos + uint2(0, -1)].x;
     float newWaveHeight = ns_ij * 2 - nm1s_ij + 0.25 * (ns_ip1j + ns_im1j + ns_ijm1 + ns_ijp1 - 4 * ns_ij);
     newWaveHeight *= dispersion;
 
-    // if (id.x == floor(effect.x) && id.y == floor(effect.y))
-    // {
-    //     newWaveHeight = effect.z;
-    // }
-
     if (HumanPositionTex[id.xy].x == 1)
     {
-        newWaveHeight = effect.z;
+        newWaveHeight = effect.z; // 使用插值平滑波动
     }
     
-    // if (HumanPositionTex[id.xy].x > 0)
-    // {
-    //     newWaveHeight += HumanPositionTex[id.xy].x;
-    // }
-
     if (ObstacleTex[id.xy].x == 1)
     {
         newWaveHeight = 0;
     }
-
+    
     if (ObstacleTex[id.xy].y == 1)
     {
         newWaveHeight = -0.5;
     }
 
-    Np1State[id.xy] = float4(newWaveHeight, newWaveHeight, newWaveHeight, 1);
+    Np1State[uvPos] = float4(newWaveHeight, newWaveHeight, newWaveHeight, 1);
+}
+
+[numthreads(8,8,1)]
+void OffsetTex(uint3 id : SV_DispatchThreadID)
+{
+    int2 uvPos = id.xy - int2(pixalOffset);
+    float newWaveHeight =  Np1State[uvPos];
+    float newWaveHeight02 =  NState[uvPos];
+
+    OffsetState01[id.xy] = float4(newWaveHeight, newWaveHeight, newWaveHeight, 1);
+    OffsetState02[id.xy] = float4(newWaveHeight02, newWaveHeight02, newWaveHeight02, 1);
 }

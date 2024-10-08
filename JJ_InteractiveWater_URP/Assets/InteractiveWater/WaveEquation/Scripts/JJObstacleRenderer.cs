@@ -18,6 +18,7 @@ public class JJObstacleRenderer : MonoBehaviour
     public int RenderTextureSize = 256;
     public float TexWorldSize = 10f;
     private ObstacleRenderPass _obstacleRenderPass;
+    public WaveteComputeManager _myWaveComputeManager;
 
     public GameObject HumanController;
 
@@ -79,6 +80,9 @@ public class JJObstacleRenderer : MonoBehaviour
         _obstacleRenderPass.RenderTextureSize = this.RenderTextureSize;
         _obstacleRenderPass.TrailMaterial = this.TrailMaterial;
         _obstacleRenderPass.DebugMaterial = this.DebugMaterial;
+
+        //compute里也要偏移
+        _myWaveComputeManager.uvOffset = _obstacleRenderPass.uvOffset;
     }
 
     private void OnDisable()

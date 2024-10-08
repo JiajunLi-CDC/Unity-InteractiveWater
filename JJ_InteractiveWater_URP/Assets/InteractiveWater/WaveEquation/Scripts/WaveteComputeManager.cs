@@ -8,7 +8,7 @@ public class WaveteComputeManager : MonoBehaviour
 {
     public ComputeShader waveCompute;
     public Material waveMaterial;
-    public RenderTexture NState, Nm1State, Np1State;
+    public RenderTexture NState, Nm1State, Np1State, OffsetState01,OffsetState02;
    
     public Vector2Int resolution; //分辨率
     public Vector3 effect; //x coord,y coord, strength
@@ -16,12 +16,16 @@ public class WaveteComputeManager : MonoBehaviour
     
     public RenderTexture HumanPositionTex;
     public RenderTexture ObstacleTex;
+
+    public Vector2 uvOffset = new Vector2(0, 0);
     
     private void Start()
     {
         InitializeTexture(ref NState);
         InitializeTexture(ref Nm1State);
         InitializeTexture(ref Np1State);
+        InitializeTexture(ref OffsetState01);
+        InitializeTexture(ref OffsetState02);
         ObstacleTex.enableRandomWrite = true;
         HumanPositionTex.enableRandomWrite = true;
             
@@ -45,6 +49,8 @@ public class WaveteComputeManager : MonoBehaviour
 
     private void Update()
     {
+        Graphics.CopyTexture(OffsetState01,Np1State);
+        Graphics.CopyTexture(OffsetState02,NState);
         Graphics.CopyTexture(NState,Nm1State);
         Graphics.CopyTexture(Np1State,NState);
 
@@ -52,17 +58,26 @@ public class WaveteComputeManager : MonoBehaviour
         MousePositionOnTex(ref pos);
         effect.x = pos.x;
         effect.y = pos.y;
-            
-        waveCompute.SetTexture(0, "NState", NState);
-        waveCompute.SetTexture(0, "Nm1State", Nm1State);
-        waveCompute.SetTexture(0, "Np1State", Np1State);
-        waveCompute.SetTexture(0, "ObstacleTex", ObstacleTex);
-        waveCompute.SetTexture(0, "HumanPositionTex", HumanPositionTex);
-        
+         
+        for(int i=0;i<2;i++)
+        {
+            waveCompute.SetTexture(i, "NState", NState);
+            waveCompute.SetTexture(i, "Nm1State", Nm1State);
+            waveCompute.SetTexture(i, "Np1State", Np1State);
+            waveCompute.SetTexture(i, "ObstacleTex", ObstacleTex);
+            waveCompute.SetTexture(i, "HumanPositionTex", HumanPositionTex);
+            waveCompute.SetTexture(i, "OffsetState01", OffsetState01);
+            waveCompute.SetTexture(i, "OffsetState02", OffsetState02);
+        }
         waveCompute.SetVector("effect",effect);
         waveCompute.SetFloat("dispersion",dispersion);
+        waveCompute.SetVector("pixalOffset", uvOffset*resolution);
         waveCompute.SetVector("resolution",new Vector2(resolution.x,resolution.y));
+        
         waveCompute.Dispatch(0,resolution.x/8,resolution.y/8,1);
+        
+        waveCompute.Dispatch(1,resolution.x/8,resolution.y/8,1);
+        
     }
     
     void MousePositionOnTex(ref Vector2 pos)

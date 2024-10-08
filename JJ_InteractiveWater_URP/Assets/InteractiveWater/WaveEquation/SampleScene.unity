@@ -976,7 +976,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!135 &768138505
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1147,11 +1147,12 @@ MonoBehaviour:
   NState: {fileID: 0}
   Nm1State: {fileID: 0}
   Np1State: {fileID: 0}
-  resolution: {x: 256, y: 256}
+  resolution: {x: 512, y: 512}
   effect: {x: 128, y: 128, z: 1}
   dispersion: 0.98
   HumanPositionTex: {fileID: 8600000, guid: af10db47c643bf341a2291e45e1d3bfd, type: 2}
   ObstacleTex: {fileID: 8400000, guid: 840db291548864e41966208dd743672b, type: 2}
+  uvOffset: {x: 0, y: 0}
 --- !u!64 &835991055
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1562,6 +1563,7 @@ MonoBehaviour:
   targetCamera: {fileID: 1272319334}
   RenderTextureSize: 256
   TexWorldSize: 12.8
+  _myWaveComputeManager: {fileID: 835991054}
   HumanController: {fileID: 812411516}
 --- !u!1001 &1615725721
 PrefabInstance:
